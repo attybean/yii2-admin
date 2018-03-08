@@ -25,11 +25,20 @@ use yii\rbac\Item;
  */
 class AuthItem extends Model
 {
+	//  MOD START
+    public $id;
     public $name;
     public $type;
     public $description;
-    public $ruleName;
+    public $rule_id;
     public $data;
+    public $parent_id;
+    public $is_active;
+    public $added_by;
+    public $updated_by;
+    public $sys;
+	//  MOD END
+
     /**
      * @var Item
      */
@@ -44,11 +53,19 @@ class AuthItem extends Model
     {
         $this->_item = $item;
         if ($item !== null) {
+			//  MOD START
+            $this->id = $item->id;
             $this->name = $item->name;
             $this->type = $item->type;
             $this->description = $item->description;
-            $this->ruleName = $item->ruleName;
+            $this->rule_id = $item->rule_id;
             $this->data = $item->data === null ? null : Json::encode($item->data);
+            $this->parent_id = $item->parent_id;
+            $this->is_active = $item->is_active;
+            $this->added_by = $item->added_by;
+            $this->updated_by = $item->updated_by;
+            $this->sys = $item->sys;
+            //  MOD END
         }
         parent::__construct($config);
     }
@@ -59,14 +76,16 @@ class AuthItem extends Model
     public function rules()
     {
         return [
-            [['ruleName'], 'checkRule'],
             [['name', 'type'], 'required'],
             [['name'], 'checkUnique', 'when' => function () {
                 return $this->isNewRecord || ($this->_item->name != $this->name);
             }],
-            [['type'], 'integer'],
-            [['description', 'data', 'ruleName'], 'default'],
-            [['name'], 'string', 'max' => 64],
+			//  MOD START
+            [['type', 'id','rule_id','is_active', 'added_by', 'updated_by', 'sys' ], 'integer'],
+            [['description', 'data'], 'default'],
+            [['parent_id'], 'string', 'max' => 36],
+            [['name'], 'string', 'max' => 64]
+			//  MOD END
         ];
     }
 
@@ -117,10 +136,19 @@ class AuthItem extends Model
             'name' => Yii::t('rbac-admin', 'Name'),
             'type' => Yii::t('rbac-admin', 'Type'),
             'description' => Yii::t('rbac-admin', 'Description'),
-            'ruleName' => Yii::t('rbac-admin', 'Rule Name'),
+			//  MOD START
+            // 'ruleName' => Yii::t('rbac-admin', 'Rule Name'),
+			//  MOD END
             'data' => Yii::t('rbac-admin', 'Data'),
         ];
     }
+
+	//  MOD START
+	public function getNameFromId($item_id)
+	{
+	    return $this->find($item);
+	}
+	//  MOD END
 
     /**
      * Check if is new record.
@@ -163,16 +191,25 @@ class AuthItem extends Model
                 $isNew = true;
             } else {
                 $isNew = false;
-                $oldName = $this->_item->name;
+				//  MOD START
+                $oldId = $this->_item->id;
+				// $oldName = $this->_item->name;
+				//  MOD END
             }
             $this->_item->name = $this->name;
             $this->_item->description = $this->description;
-            $this->_item->ruleName = $this->ruleName;
+			//  MOD START
+			// $this->_item->ruleName = $this->ruleName;
+			$this->_item->rule_id = $this->rule_id;
+			//  MOD END
             $this->_item->data = $this->data === null || $this->data === '' ? null : Json::decode($this->data);
             if ($isNew) {
                 $manager->add($this->_item);
             } else {
-                $manager->update($oldName, $this->_item);
+				//  MOD START
+                $manager->update($oldId, $this->_item);
+				// $manager->update($oldName, $this->_item);
+				//  MOD END
             }
             Helper::invalidate();
             return true;
@@ -247,21 +284,35 @@ class AuthItem extends Model
     {
         $manager = Configs::authManager();
         $available = [];
+		//  MOD START
         if ($this->type == Item::TYPE_ROLE) {
-            foreach (array_keys($manager->getRoles()) as $name) {
-                $available[$name] = 'role';
+            $roles = $manager->getRoles();
+            foreach ($roles as $k => $role) {
+                $available[$role->id] = ['role', $role->name];
             }
+            // foreach (array_keys($manager->getRoles()) as $name) {
+            //     $available[$name] = 'role';
+            // }
         }
-        foreach (array_keys($manager->getPermissions()) as $name) {
-            $available[$name] = $name[0] == '/' ? 'route' : 'permission';
-        }
+            $permissions = $manager->getPermissions();
+            foreach ($permissions as $k => $permission) {
+                if ($permission->id[0] != '/') {
+                    $available[$permission->id] = ['permission', $permission->name];
+                }
+            }
+        // foreach (array_keys($manager->getPermissions()) as $name) {
+        //     $available[$name] = $name[0] == '/' ? 'route' : 'permission';
+        // }
+		//  MOD END
 
         $assigned = [];
-        foreach ($manager->getChildren($this->_item->name) as $item) {
-            $assigned[$item->name] = $item->type == 1 ? 'role' : ($item->name[0] == '/' ? 'route' : 'permission');
-            unset($available[$item->name]);
+		//  MOD STAT
+        foreach ($manager->getChildren($this->_item->id) as $item) {
+            $assigned[$item->id] = $item->type == 1 ? ['role', $item->name] : ($item->id[0] == '/' ? ['route', $item->name] : ['permission', $item->name]);
+            unset($available[$item->id]);
         }
-        unset($available[$this->name]);
+        unset($available[$this->id]);
+		//  MOD END
         return [
             'available' => $available,
             'assigned' => $assigned,

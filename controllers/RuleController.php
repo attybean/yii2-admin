@@ -35,6 +35,43 @@ class RuleController extends Controller
         ];
     }
 
+	//  MOD START
+	public function beforeAction($action)
+	{
+		$retVal = parent::beforeAction($action);
+		if( $retVal )
+		{
+			$retVal = false;
+			switch( $action->id )
+			{
+				case "index":
+				case "view":
+				case "create":
+				case "update":
+				case "delete":
+					$retVal = \Yii::$app->user->can('Super System Admin')? true : false;
+					break;
+				default:
+					$retVal = false;
+					break;
+			}
+		}
+		if($retVal)
+		{
+			return $retVal;
+		}
+		else
+		{
+			Yii::$app->session->setFlash('error', 'Din bruker har ikke tilgang på siden du forsøkte å gå til. Ta kontakt med en administrator om du mener det har oppstått en feil.');
+			if(Yii::$app->request->referrer){
+				$this->redirect(Yii::$app->request->referrer);
+			}else{
+				$this->goHome();
+			}
+		}
+	}
+	//  MOD END
+
     /**
      * Lists all AuthItem models.
      * @return mixed
@@ -72,8 +109,10 @@ class RuleController extends Controller
         $model = new BizRule(null);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Helper::invalidate();
-
-            return $this->redirect(['view', 'id' => $model->name]);
+			
+			//  MOD START			
+            return $this->redirect(Yii::$app->request->referrer);
+			//  MOD END
         } else {
             return $this->render('create', ['model' => $model,]);
         }
@@ -91,7 +130,9 @@ class RuleController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             Helper::invalidate();
 
-            return $this->redirect(['view', 'id' => $model->name]);
+			//  MOD START
+            return $this->redirect(['view', 'id' => $model->id]);
+			//  MOD END
         }
 
         return $this->render('update', ['model' => $model,]);

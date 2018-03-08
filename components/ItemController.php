@@ -40,6 +40,50 @@ class ItemController extends Controller
         ];
     }
 
+	//  MOD START
+	public function beforeAction($action)
+    {
+		$retVal = parent::beforeAction($action);
+        if( $retVal )
+        {
+            $retVal = false;
+            switch( $action->id )
+            {
+                case "index":
+                case "view":
+                case "create":
+                case "update":
+                case "delete":
+                case "assign":
+                case "remove":
+                case "get-view-path":
+                case "get-type":
+                case "labels":
+                    $retVal = \Yii::$app->user->can('Super System Admin')? true : false;
+                    break;
+
+
+                default:
+                      $retVal = false;
+                      break;
+			}
+		}
+		if($retVal)
+		{
+			return $retVal;
+		}
+		else
+		{
+			Yii::$app->session->setFlash('error', 'Din bruker har ikke tilgang på siden du forsøkte å gå til. Ta kontakt med en administrator om du mener det har oppstått en feil.');
+			if(Yii::$app->request->referrer){
+				$this->redirect(Yii::$app->request->referrer);
+			}else{
+				$this->goHome();
+			}
+		}
+    }
+	//  MOD END
+
     /**
      * Lists all AuthItem models.
      * @return mixed
@@ -77,7 +121,9 @@ class ItemController extends Controller
         $model = new AuthItem(null);
         $model->type = $this->type;
         if ($model->load(Yii::$app->getRequest()->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->name]);
+			//  MOD START
+            return $this->redirect(['view', 'id' => Yii::$app->db->getLastInsertID()]);
+			//  MOD END
         } else {
             return $this->render('create', ['model' => $model]);
         }
@@ -93,7 +139,9 @@ class ItemController extends Controller
     {
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->getRequest()->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->name]);
+			//  MOD START
+            return $this->redirect(['view', 'id' => $model->id]);
+			//  MOD END
         }
 
         return $this->render('update', ['model' => $model]);

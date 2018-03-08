@@ -87,21 +87,25 @@ class Assignment extends \mdm\admin\BaseObject
     {
         $manager = Configs::authManager();
         $available = [];
-        foreach (array_keys($manager->getRoles()) as $name) {
-            $available[$name] = 'role';
+        //  MOD START
+        $roles = $manager->getRoles();
+        foreach ($roles as $k => $role) {
+            $available[$role->id] = ['role', $role->name];
         }
 
-        foreach (array_keys($manager->getPermissions()) as $name) {
-            if ($name[0] != '/') {
-                $available[$name] = 'permission';
+        $permissions = $manager->getPermissions();
+        foreach ($permissions as $k => $permission) {
+            if ($permission->id[0] != '/') {
+                $available[$permission->id] = ['permission', $permission->name];
             }
         }
 
         $assigned = [];
-        foreach ($manager->getAssignments($this->id) as $item) {
-            $assigned[$item->roleName] = $available[$item->roleName];
-            unset($available[$item->roleName]);
+        foreach (array_keys($manager->getAssignments($this->id)) as $k) {
+            $assigned[$k] = $available[$k];
+            unset($available[$k]);
         }
+        //  MOD END
 
         return [
             'available' => $available,

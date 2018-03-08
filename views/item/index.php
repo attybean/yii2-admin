@@ -18,6 +18,9 @@ $this->params['breadcrumbs'][] = $this->title;
 $rules = array_keys(Configs::authManager()->getRules());
 $rules = array_combine($rules, $rules);
 unset($rules[RouteRule::RULE_NAME]);
+//  MOD START
+$sup = \Yii::$app->user->can('Super System Admin');
+//  MOD END
 ?>
 <div class="role-index">
     <h1><?= Html::encode($this->title) ?></h1>
@@ -34,16 +37,37 @@ unset($rules[RouteRule::RULE_NAME]);
                 'attribute' => 'name',
                 'label' => Yii::t('rbac-admin', 'Name'),
             ],
-            [
-                'attribute' => 'ruleName',
-                'label' => Yii::t('rbac-admin', 'Rule Name'),
-                'filter' => $rules
-            ],
+			//  MOD START
+            // [
+            //     'attribute' => 'ruleName',
+            //     'label' => Yii::t('rbac-admin', 'Rule Name'),
+            //     'filter' => $rules
+            // ],
+			//  MOD END
             [
                 'attribute' => 'description',
                 'label' => Yii::t('rbac-admin', 'Description'),
             ],
-            ['class' => 'yii\grid\ActionColumn',],
+			//  MOD START
+            ['class' => 'yii\grid\ActionColumn',
+                'template'=> '{view}{update}{delete}', //\Yii::$app->user->can('System Super Admin') ? '{view}{update}{delete}': !($searchModel['is_active']) && !($searchModel['sys']) ?'{view}{update}{delete}' :'',
+                'visibleButtons' => [
+                    'view' => function($model, $key, $index) use ($sup){                                     
+                            return !$model->is_active ||  $sup;
+                    },
+                    'update' => function($model, $key, $index) use ($sup) {                       
+                            return !$model->is_active || $sup;
+                    },
+                    'delete' => function($model, $key, $index) use ($sup) {                       
+                            return !$model->is_active || $sup;
+                    }
+                ]
+
+                // 'buttons' => [
+                //     ''
+                // ],
+            ],
+			//  MOD END
         ],
     ])
     ?>

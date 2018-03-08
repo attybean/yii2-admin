@@ -36,12 +36,14 @@ function search(target) {
         permission: [$('<optgroup label="Permission">'), false],
         route: [$('<optgroup label="Routes">'), false],
     };
-    $.each(_opts.items[target], function (name, group) {
-        if (name.indexOf(q) >= 0) {
-            $('<option>').text(name).val(name).appendTo(groups[group][0]);
-            groups[group][1] = true;
+	//  MOD START
+    $.each(_opts.items[target], function (id, data) {
+        if (data[1].indexOf(q) >= 0) {           
+            $('<option>').text(data[1]).val(id).appendTo(groups[data[0]][0]);
+            groups[data[0]][1] = true;
         }
     });
+	//  MOD END
     $.each(groups, function () {
         if (this[1]) {
             $list.append(this[0]);

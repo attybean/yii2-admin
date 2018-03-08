@@ -24,6 +24,15 @@ class AuthItem extends Model
     public $ruleName;
     public $data;
 
+	//  MOD START
+    public $company_id;
+    public $parent_id;
+    public $is_active;
+    public $added_by;
+    public $updated_by;
+    public $sys;
+	//  MOD END
+
     /**
      * @inheritdoc
      */
@@ -31,7 +40,10 @@ class AuthItem extends Model
     {
         return [
             [['name', 'ruleName', 'description'], 'safe'],
-            [['type'], 'integer'],
+			//  MOD START
+            [['type','is_active', 'added_by', 'updated_by', 'sys'], 'integer'],
+            [['company_id', 'parent_id'], 'string', 'max' => 36],
+			//  MOD END
         ];
     }
 
