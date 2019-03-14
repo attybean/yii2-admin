@@ -66,7 +66,7 @@ class AssignmentController extends Controller
 				case "view":
 				case "assign":
 				case "revoke":
-					$retVal = \Yii::$app->user->can('Super System Admin')? true : false;
+					$retVal = \Yii::$app->user->can(161)/*'Super System Admin')*/? true : false;
 					break;			
 				default:
 					$retVal = false;
@@ -79,7 +79,7 @@ class AssignmentController extends Controller
 		}
 		else
 		{
-			Yii::$app->session->setFlash('error', 'Din bruker har ikke tilgang på siden du forsøkte å gå til. Ta kontakt med en administrator om du mener det har oppstått en feil.');
+			Yii::$app->session->setFlash('error', 'Din bruker har ikke tilgang pÃ¥ siden du forsÃ¸kte Ã¥ gÃ¥ til. Ta kontakt med en administrator om du mener det har oppstÃ¥tt en feil.');
 			if(Yii::$app->request->referrer){
 				$this->redirect(Yii::$app->request->referrer);
 			}else{
