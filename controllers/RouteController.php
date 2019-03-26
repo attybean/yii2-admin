@@ -43,7 +43,7 @@ class RouteController extends Controller
 				case "create":
 				case "assign":
 				case "refresh":
-				$retVal = \Yii::$app->user->can('Super System Admin')? true : false;
+				$retVal = \Yii::$app->user->can(161)/*'Super System Admin')*/? true : false;
 				break;
 				
 				
@@ -58,7 +58,7 @@ class RouteController extends Controller
 		}
 		else
 		{
-			Yii::$app->session->setFlash('error', 'Din bruker har ikke tilgang på siden du forsøkte å gå til. Ta kontakt med en administrator om du mener det har oppstått en feil.');
+			Yii::$app->session->setFlash('error', 'Din bruker har ikke tilgang pï¿½ siden du forsï¿½kte ï¿½ gï¿½ til. Ta kontakt med en administrator om du mener det har oppstï¿½tt en feil.');
 			if(Yii::$app->request->referrer){
 			$this->redirect(Yii::$app->request->referrer);
 			}else{

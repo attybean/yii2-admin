@@ -49,7 +49,7 @@ class RuleController extends Controller
 				case "create":
 				case "update":
 				case "delete":
-					$retVal = \Yii::$app->user->can('Super System Admin')? true : false;
+					$retVal = \Yii::$app->user->can(161)/*'Super System Admin')*/? true : false;
 					break;
 				default:
 					$retVal = false;
