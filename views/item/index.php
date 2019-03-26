@@ -19,7 +19,7 @@ $rules = array_keys(Configs::authManager()->getRules());
 $rules = array_combine($rules, $rules);
 unset($rules[RouteRule::RULE_NAME]);
 //  MOD START
-$sup = \Yii::$app->user->can('Super System Admin');
+$sup = \Yii::$app->user->can(161)/*'Super System Admin')*/;
 //  MOD END
 ?>
 <div class="role-index">
@@ -50,7 +50,7 @@ $sup = \Yii::$app->user->can('Super System Admin');
             ],
 			//  MOD START
             ['class' => 'yii\grid\ActionColumn',
-                'template'=> '{view}{update}{delete}', //\Yii::$app->user->can('System Super Admin') ? '{view}{update}{delete}': !($searchModel['is_active']) && !($searchModel['sys']) ?'{view}{update}{delete}' :'',
+                'template'=> '{view}{update}{delete}',
                 'visibleButtons' => [
                     'view' => function($model, $key, $index) use ($sup){                                     
                             return !$model->is_active ||  $sup;
