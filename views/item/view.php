@@ -16,7 +16,7 @@ $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('rbac-admin', $labels['Items']), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
-AnimateAsset::register($this);
+//AnimateAsset::register($this);
 YiiAsset::register($this);
 $opts = Json::htmlEncode([
     'items' => $model->getItems(),
