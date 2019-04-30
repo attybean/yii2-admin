@@ -23,23 +23,23 @@ $opts = Json::htmlEncode([
 ]);
 $this->registerJs("var _opts = {$opts};");
 $this->registerJs($this->render('_script.js'));
-$animateIcon = ' <i class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></i>';
+$animateIconright = '<i class="fa fa-arrow-right"></i>';
+$animateIconleft = '<i class="fa fa-arrow-left"></i>';
 ?>
-<div class="auth-item-view">
+<div class="auth-item-view col-md-12 org_yii2admin">
     <h1><?=Html::encode($this->title);?></h1>
     <p>
 		<?php /*  MOD START */ ?>
         <?= Html::a(Yii::t('rbac-admin', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('rbac-admin', 'Delete'), ['delete', 'id' => $model->id], [
-		 /*  MOD END */ 
-    'class' => 'btn btn-danger',
-    'data-confirm' => Yii::t('rbac-admin', 'Are you sure to delete this item?'),
-    'data-method' => 'post',
-]);?>
-        <?=Html::a(Yii::t('rbac-admin', 'Create'), ['create'], ['class' => 'btn btn-success']);?>
+                /*  MOD END */ 
+            'class' => 'btn btn-danger',
+            'data-confirm' => Yii::t('rbac-admin', 'Are you sure to delete this item?'),
+            'data-method' => 'post',
+        ]);?>
     </p>
     <div class="row">
-        <div class="col-sm-11">
+        <div class="col-sm-12 nopadding nopadding--right">
             <?=
 			DetailView::widget([
 			    'model' => $model,
@@ -51,36 +51,35 @@ $animateIcon = ' <i class="glyphicon glyphicon-refresh glyphicon-refresh-animate
 					//  MOD END
 			        'data:ntext',
 			    ],
-			    'template' => '<tr><th style="width:25%">{label}</th><td>{value}</td></tr>',
+			    'template' => '<tr><th>{label}</th><td>{value}</td></tr>',
 			]);
 			?>
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-5">
+        <div class="col-sm-5 nopadding">
             <input class="form-control search" data-target="available"
                    placeholder="<?=Yii::t('rbac-admin', 'Search for available');?>">
-            <select multiple size="20" class="form-control list" data-target="available"></select>
+            <select multiple size="20" class="list" data-target="available"></select>
         </div>
-        <div class="col-sm-1">
-            <br><br>
+        <div class="col-sm-2 org_yii2admin_leftrightbuttons">
 				<?php /*  MOD START */ ?>
-            <?= Html::a('&gt;&gt;' . $animateIcon, ['assign', 'id' => $model->id], [
-    'class' => 'btn btn-success btn-assign',
-    'data-target' => 'available',
-    'title' => Yii::t('rbac-admin', 'Assign'),
-]);?><br><br>
-            <?=Html::a('&lt;&lt;' . $animateIcon, ['remove', 'id' => $model->id], [
-    'class' => 'btn btn-danger btn-assign',
-    'data-target' => 'assigned',
-    'title' => Yii::t('rbac-admin', 'Remove'),
-]);?>
+            <?= Html::a($animateIconright, ['assign', 'id' => $model->id], [
+                'class' => 'btn btn-primary btn-assign',
+                'data-target' => 'available',
+                'title' => Yii::t('rbac-admin', 'Assign'),
+            ]);?><br><br>
+                        <?=Html::a($animateIconleft, ['remove', 'id' => $model->id], [
+                'class' => 'btn btn-danger btn-assign',
+                'data-target' => 'assigned',
+                'title' => Yii::t('rbac-admin', 'Remove'),
+            ]);?>
 				<?php /*  MOD END */ ?>
         </div>
-        <div class="col-sm-5">
+        <div class="col-sm-5 nopadding nopadding--right">
             <input class="form-control search" data-target="assigned"
                    placeholder="<?=Yii::t('rbac-admin', 'Search for assigned');?>">
-            <select multiple size="20" class="form-control list" data-target="assigned"></select>
+            <select multiple size="20" class="list" data-target="assigned"></select>
         </div>
     </div>
 </div>
