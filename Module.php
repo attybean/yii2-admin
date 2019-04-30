@@ -174,6 +174,11 @@ class Module extends \yii\base\Module
         if (parent::beforeAction($action)) {
             /* @var $action \yii\base\Action */
             $view = $action->controller->getView();
+            
+            $view->params['breadcrumbs'][] = [
+                'label' => ($this->defaultUrlLabel ?: Yii::t('rbac-admin', 'Dashboard')),
+                'url' => ['/'],
+            ];
 
             $view->params['breadcrumbs'][] = [
                 'label' => ($this->defaultUrlLabel ?: Yii::t('rbac-admin', 'Admin')),
