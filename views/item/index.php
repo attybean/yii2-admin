@@ -22,10 +22,10 @@ unset($rules[RouteRule::RULE_NAME]);
 $sup = \Yii::$app->user->can(161)/*'Super System Admin')*/;
 //  MOD END
 ?>
-<div class="role-index">
+<div class="role-index col-md-12">
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
-        <?= Html::a(Yii::t('rbac-admin', 'Create ' . $labels['Item']), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('rbac-admin', 'Create ' . $labels['Item']), ['create'], ['class' => 'btn btn-primary']) ?>
     </p>
     <?=
     GridView::widget([
@@ -33,6 +33,13 @@ $sup = \Yii::$app->user->can(161)/*'Super System Admin')*/;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
+            [
+                'label' => 'Id',
+                'class' => 'yii\grid\DataColumn', // can be omitted, as it is the default
+                'value' => function ($data) {
+                    return $data->id; // $data['name'] for array data, e.g. using SqlDataProvider.
+                },
+            ],
             [
                 'attribute' => 'name',
                 'label' => Yii::t('rbac-admin', 'Name'),
@@ -61,7 +68,24 @@ $sup = \Yii::$app->user->can(161)/*'Super System Admin')*/;
                     'delete' => function($model, $key, $index) use ($sup) {                       
                             return !$model->is_active || $sup;
                     }
-                ]
+                ],
+                'buttons' => [
+                    'update'=>function($url,$model,$key)
+                    {
+                        return Html::a("<i class='fa fa-edit'></i>", $url);
+                    },
+                    'view'=>function($url,$model,$key)
+                    {
+                        return Html::a("<i class='fa fa-eye'></i>", $url);
+                    },
+                    'delete'=>function($url,$model,$key)
+                    {
+                        return Html::a("<i class='fa fa-trash-alt'></i>", $url, [
+                            'data-confirm' => Yii::t('rbac-admin', 'Are you sure to delete this item?'),
+                            'data-method' => 'post',
+                        ]);
+                    }
+                ],
 
                 // 'buttons' => [
                 //     ''
